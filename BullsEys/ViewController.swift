@@ -9,14 +9,19 @@
 import UIKit
 
 class ViewController: UIViewController {
-    var currentValue = 50
-    var targetValue = 0
     @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var targetLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var roundLabel: UILabel!
+    
+    var currentValue = 0
+    var targetValue = 0
+    var score = 0
+    var round = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        startNewRound()
+        startNewGame()
         updateLabels()
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -27,42 +32,68 @@ class ViewController: UIViewController {
     }
 
     @IBAction func showAlert() {
+        let difference = abs(currentValue - targetValue)
+        // absolute value
+        var points = 100 - difference
         
-        var difference: Int
-        if currentValue > targetValue {
-            difference = currentValue - targetValue
-        } else if currentValue < targetValue {
-            difference = targetValue - currentValue
+        let title : String
+        if difference == 0 {
+            title = "Perfect!"
+            points += 100
+        } else if difference <= 5 {
+            title = "You almost had it!"
+            if difference == 1 || difference == 2 {
+                points += 50
+            }
+        } else if difference <= 10 {
+            title = "Pretty good!"
         } else {
-            difference = 0
+            title = "Not even close..."
         }
         
-        let message = "The value of the slider is now: \(currentValue)" + "\nThe target value is: \(targetValue)" + "\nThe difference is: \(difference)"
-        let alert = UIAlertController(title: "Hello, World!", message: message, preferredStyle: .alert)
-        let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+        score += points
+        
+        let message = "The value of the slider is now: \(currentValue)" + "\nThe target value is: \(targetValue)" + "\nThe difference is: \(difference)" + "\nYou scored \(points) points"
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .default,
+                                   handler: {
+                                    action in
+                                    self.startNewRound()
+                                    self.updateLabels()
+        })
         
         alert.addAction(action)
-        
         present(alert, animated: true, completion: nil)
-        startNewRound()
+    }
+    
+    @IBAction func startOver() {
+        startNewGame()
         updateLabels()
     }
+
     
     @IBAction func sliderMoved(_ slider : UISlider) {
         currentValue = lroundf(slider.value)
     }
     
     func startNewRound() {
+        round += 1
+        currentValue = 50
         targetValue = 1 + Int(arc4random_uniform(100))
-        
         slider.value = Float(currentValue)
     }
     
     func updateLabels() {
         targetLabel.text = String(targetValue)
+        scoreLabel.text = String(score)
+        roundLabel.text = String(round)
     }
     
-
+    func startNewGame() {
+        round = 0
+        score = 0
+        startNewRound()
+    }
 }
 
 
