@@ -29,6 +29,23 @@ class BullsEysUITests: XCTestCase {
     }
     
     func testExample() {
+        
+        
+        let app = XCUIApplication()
+        let element = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element
+        element.children(matching: .button).element(boundBy: 2).tap()
+        
+        let element2 = app.webViews.children(matching: .other).element
+        element2.swipeRight()
+        element2.swipeLeft()
+        app.buttons["Close"].tap()
+        app.sliders["49%"].swipeDown()
+        app.buttons["Hit Me!"].tap()
+        app.alerts["Not even close..."].buttons["OK"].tap()
+        element.children(matching: .button).element(boundBy: 1).tap()
+        
+        
+        
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
